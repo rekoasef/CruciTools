@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "CruciTools | Gestión Postventa",
   description: "Herramientas digitales para mecánicos y coordinadores de Crucianelli.",
-  manifest: "/manifest.json", // Preparado para PWA futuro
+  manifest: "/manifest.json", // <--- ESTA LÍNEA ES CLAVE
   themeColor: "#E40613",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };

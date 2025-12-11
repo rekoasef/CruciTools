@@ -7,7 +7,9 @@ export function createClient() {
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    // UTILIZA LA CLAVE SECRETA DE SERVICIO (SERVICE_ROLE_KEY o ANON_KEY),
+    // NO LA CLAVE SECRETA 'PUBLIC' aquí. USAR ANON_KEY es lo estándar para el cliente de servidor.
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, 
     {
       cookies: {
         get(name: string) {
@@ -17,18 +19,15 @@ export function createClient() {
           try {
             cookieStore.set({ name, value, ...options })
           } catch (error) {
-            // El método `set` fue llamado desde un Server Component.
-            // Esto puede ser ignorado si hay un Middleware refrescando
-            // las sesiones de usuario.
+            // Esto solo ocurre en Server Actions cuando se redirige.
+            console.warn("Cookie set error during redirect:", error);
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
-            // El método `delete` fue llamado desde un Server Component.
-            // Esto puede ser ignorado si hay un Middleware refrescando
-            // las sesiones de usuario.
+            console.warn("Cookie remove error during redirect:", error);
           }
         },
       },
