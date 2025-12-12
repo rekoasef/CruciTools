@@ -3,12 +3,16 @@
 import { createClient } from "@/utils/supabase/server";
 import { Database } from "@/lib/database.types"; 
 
-// Tipos base
-type ServiceReportRow = Database['public']['Tables']['service_reports']['Row'];
-type ProfileRow = Database['public']['Tables']['profiles']['Row'];
-type AssignmentBaseRow = Database['public']['Tables']['assignments']['Row'];
+// =========================================================
+// TIPOS EXPORTADOS (Corrección Aquí)
+// =========================================================
 
-// Tipos extendidos para los JOINs
+// Tipos base de tablas
+export type ServiceReportRow = Database['public']['Tables']['service_reports']['Row'];
+export type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+export type AssignmentBaseRow = Database['public']['Tables']['assignments']['Row'];
+
+// Tipos extendidos con relaciones (JOINs)
 export type AssignmentRow = AssignmentBaseRow & {
     profiles: { full_name: string | null } | null;
     service_types: { name: string } | null;
@@ -74,7 +78,7 @@ export async function getTechnicians() {
 
     if (error) return { data: [], error: error.message };
 
-    // Mapeamos para asegurar compatibilidad con componentes que esperan {id, full_name}
+    // Mapeamos para asegurar compatibilidad
     const technicians = data?.map(t => ({ id: t.id, full_name: t.full_name || 'Sin Nombre' })) || [];
 
     return { data: technicians, error: null };
