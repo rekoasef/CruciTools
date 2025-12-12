@@ -12,7 +12,8 @@ import {
   Wrench,
   Users,
   Briefcase,
-  BookOpen // Nuevo ícono para biblioteca
+  BookOpen, // Nuevo ícono para biblioteca
+  Calendar
 } from "lucide-react";
 import { signOut } from "@/app/(auth)/actions";
 
@@ -24,6 +25,7 @@ const MENU_ITEMS = {
     { name: "Asignaciones", href: "/dashboard/assignments", icon: Briefcase },
     { name: "Reportes Globales", href: "/dashboard/services", icon: ClipboardList },
     { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
+    { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ],
   mecanico: [
     { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
@@ -31,6 +33,7 @@ const MENU_ITEMS = {
     { name: "Nuevo Checklist", href: "/dashboard/checklists", icon: ClipboardCheck },
     { name: "Calculadoras", href: "/dashboard/calculators/seeds", icon: Calculator },
     { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
+    { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ]
 };
 

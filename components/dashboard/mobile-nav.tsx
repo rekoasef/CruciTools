@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Menu, X, LayoutDashboard, Calculator, ClipboardCheck, ClipboardList, LogOut, Wrench, Users, Briefcase, BookOpen } from "lucide-react";
+import { Menu, X, LayoutDashboard, Calculator, ClipboardCheck, ClipboardList, LogOut, Wrench, Users, Briefcase, BookOpen, Calendar } from "lucide-react";
 import { signOut } from "@/app/(auth)/actions";
 
 const MENU_ITEMS = {
@@ -14,6 +14,7 @@ const MENU_ITEMS = {
     { name: "Asignaciones", href: "/dashboard/assignments", icon: Briefcase },
     { name: "Reportes Globales", href: "/dashboard/services", icon: ClipboardList },
     { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
+    { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ],
   mecanico: [
     { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
@@ -21,6 +22,7 @@ const MENU_ITEMS = {
     { name: "Nuevo Checklist", href: "/dashboard/checklists", icon: ClipboardCheck },
     { name: "Calculadoras", href: "/dashboard/calculators/seeds", icon: Calculator },
     { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
+    { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ]
 };
 
