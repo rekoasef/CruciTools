@@ -6,14 +6,14 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-// Definición de Tipos para los ENUMS (Coincidentes con SQL)
+// ENUMS
 type ServiceType = 'Puesta en Marcha' | 'Servicio Técnico' | 'Garantía';
 type AssignmentStatus = 'abierto' | 'en_progreso' | 'cancelado' | 'finalizado';
+type LibraryType = 'folder' | 'pdf' | 'video' | 'image' | 'link'; // NUEVO
 
 export interface Database {
   public: {
     Tables: {
-      // 1. PROFILES
       profiles: {
         Row: {
           id: string
@@ -52,7 +52,6 @@ export interface Database {
           }
         ]
       },
-      // 2. SERVICE_REPORTS
       service_reports: {
         Row: {
           id: string
@@ -100,7 +99,6 @@ export interface Database {
           }
         ]
       },
-      // 3. SERVICE_TYPES
       service_types: {
         Row: {
           id: string
@@ -125,7 +123,6 @@ export interface Database {
         }
         Relationships: []
       },
-      // 4. ASSIGNMENTS (ACTUALIZADA CON MAPAS)
       assignments: {
         Row: {
           id: string
@@ -133,10 +130,8 @@ export interface Database {
           service_type_id: string
           client_name: string
           client_location: string | null
-          // NUEVOS CAMPOS FASE 4
           origin_location: string | null
           distance_km: number | null
-          // FIN NUEVOS CAMPOS
           machine_model: string
           machine_serial: string | null
           notes: string | null
@@ -151,10 +146,8 @@ export interface Database {
           service_type_id: string
           client_name: string
           client_location?: string | null
-          // NUEVOS CAMPOS FASE 4
           origin_location?: string | null
           distance_km?: number | null
-          // FIN NUEVOS CAMPOS
           machine_model: string
           machine_serial?: string | null
           notes?: string | null
@@ -169,10 +162,8 @@ export interface Database {
           service_type_id?: string
           client_name?: string
           client_location?: string | null
-          // NUEVOS CAMPOS FASE 4
           origin_location?: string | null
           distance_km?: number | null
-          // FIN NUEVOS CAMPOS
           machine_model?: string
           machine_serial?: string | null
           notes?: string | null
@@ -204,6 +195,44 @@ export interface Database {
             referencedColumns: ["id"]
           }
         ]
+      },
+      // 5. LIBRARY ITEMS (NUEVA TABLA FASE 8)
+      library_items: {
+        Row: {
+          id: string
+          name: string
+          type: LibraryType
+          url: string | null
+          parent_id: string | null
+          created_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          type: LibraryType
+          url?: string | null
+          parent_id?: string | null
+          created_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          type?: LibraryType
+          url?: string | null
+          parent_id?: string | null
+          created_by?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "library_items_parent_id_fkey"
+            columns: ["parent_id"]
+            referencedRelation: "library_items"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
@@ -216,6 +245,7 @@ export interface Database {
       app_role: 'coordinador' | 'mecanico'
       service_type: ServiceType
       assignment_status: AssignmentStatus
+      library_type: LibraryType
     }
   }
 }

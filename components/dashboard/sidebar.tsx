@@ -11,7 +11,8 @@ import {
   LogOut, 
   Wrench,
   Users,
-  Briefcase
+  Briefcase,
+  BookOpen // Nuevo ícono para biblioteca
 } from "lucide-react";
 import { signOut } from "@/app/(auth)/actions";
 
@@ -22,13 +23,14 @@ const MENU_ITEMS = {
     { name: "Gestión de Usuarios", href: "/dashboard/users", icon: Users },
     { name: "Asignaciones", href: "/dashboard/assignments", icon: Briefcase },
     { name: "Reportes Globales", href: "/dashboard/services", icon: ClipboardList },
+    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
   ],
   mecanico: [
     { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
     { name: "Mis Tareas", href: "/dashboard/services", icon: ClipboardList },
-    // AQUÍ ESTÁ EL LINK CLAVE:
     { name: "Nuevo Checklist", href: "/dashboard/checklists", icon: ClipboardCheck },
-    { name: "Calculadoras", href: "/dashboard/calculators/seeds", icon: Calculator }, // Apunta directo a semillas por ahora
+    { name: "Calculadoras", href: "/dashboard/calculators/seeds", icon: Calculator },
+    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
   ]
 };
 
@@ -61,7 +63,9 @@ export default function Sidebar({ userRole = 'mecanico' }: SidebarProps) {
         </div>
         
         {navItems.map((item) => {
+          // Lógica para detectar activo (exacto o subruta, excepto dashboard root)
           const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`));
+          
           return (
             <Link
               key={item.href}
