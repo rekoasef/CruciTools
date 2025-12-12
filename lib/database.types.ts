@@ -9,7 +9,7 @@ export type Json =
 // ENUMS
 type ServiceType = 'Puesta en Marcha' | 'Servicio Técnico' | 'Garantía';
 type AssignmentStatus = 'abierto' | 'en_progreso' | 'cancelado' | 'finalizado';
-type LibraryType = 'folder' | 'pdf' | 'video' | 'image' | 'link'; // NUEVO
+type LibraryType = 'folder' | 'pdf' | 'video' | 'image' | 'link';
 
 export interface Database {
   public: {
@@ -196,7 +196,6 @@ export interface Database {
           }
         ]
       },
-      // 5. LIBRARY ITEMS (NUEVA TABLA FASE 8)
       library_items: {
         Row: {
           id: string
@@ -230,6 +229,144 @@ export interface Database {
             foreignKeyName: "library_items_parent_id_fkey"
             columns: ["parent_id"]
             referencedRelation: "library_items"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      
+      // --- NUEVAS TABLAS: CALCULADORA DE SIEMBRA ---
+      seed_crops: {
+        Row: {
+          id: string
+          name: string
+        }
+        Insert: {
+          id: string
+          name: string
+        }
+        Update: {
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      },
+      seed_plates: {
+        Row: {
+          id: string
+          crop_id: string | null
+          name: string
+        }
+        Insert: {
+          id: string
+          crop_id?: string | null
+          name: string
+        }
+        Update: {
+          id?: string
+          crop_id?: string | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seed_plates_crop_id_fkey"
+            columns: ["crop_id"]
+            referencedRelation: "seed_crops"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      row_spacings: {
+        Row: {
+          id: string
+          crop_id: string | null
+          plate_id: string | null
+          name: string
+        }
+        Insert: {
+          id: string
+          crop_id?: string | null
+          plate_id?: string | null
+          name: string
+        }
+        Update: {
+          id?: string
+          crop_id?: string | null
+          plate_id?: string | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "row_spacings_plate_id_fkey"
+            columns: ["plate_id"]
+            referencedRelation: "seed_plates"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      seed_populations: {
+        Row: {
+          id: string
+          crop_id: string | null
+          plate_id: string | null
+          spacing_id: string | null
+          name: string
+        }
+        Insert: {
+          id: string
+          crop_id?: string | null
+          plate_id?: string | null
+          spacing_id?: string | null
+          name: string
+        }
+        Update: {
+          id?: string
+          crop_id?: string | null
+          plate_id?: string | null
+          spacing_id?: string | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seed_populations_spacing_id_fkey"
+            columns: ["spacing_id"]
+            referencedRelation: "row_spacings"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      speed_limits: {
+        Row: {
+          id: string
+          crop_id: string | null
+          plate_id: string | null
+          spacing_id: string | null
+          population_id: string | null
+          speed_value: string
+          result: string
+        }
+        Insert: {
+          id: string
+          crop_id?: string | null
+          plate_id?: string | null
+          spacing_id?: string | null
+          population_id?: string | null
+          speed_value: string
+          result: string
+        }
+        Update: {
+          id?: string
+          crop_id?: string | null
+          plate_id?: string | null
+          spacing_id?: string | null
+          population_id?: string | null
+          speed_value?: string
+          result?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "speed_limits_population_id_fkey"
+            columns: ["population_id"]
+            referencedRelation: "seed_populations"
             referencedColumns: ["id"]
           }
         ]

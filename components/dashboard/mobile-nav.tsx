@@ -4,7 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Menu, X, LayoutDashboard, Calculator, ClipboardCheck, ClipboardList, LogOut, Wrench, Users, Briefcase, BookOpen, Calendar } from "lucide-react";
+import { 
+  Menu, 
+  X, 
+  LayoutDashboard, 
+  Calculator, // Usamos Calculator para Herramientas
+  ClipboardCheck, 
+  ClipboardList, 
+  LogOut, 
+  Wrench, 
+  Users, 
+  Briefcase, 
+  BookOpen, 
+  Calendar 
+} from "lucide-react";
 import { signOut } from "@/app/(auth)/actions";
 
 const MENU_ITEMS = {
@@ -13,15 +26,16 @@ const MENU_ITEMS = {
     { name: "Gestión de Usuarios", href: "/dashboard/users", icon: Users },
     { name: "Asignaciones", href: "/dashboard/assignments", icon: Briefcase },
     { name: "Reportes Globales", href: "/dashboard/services", icon: ClipboardList },
-    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
+    { name: "Herramientas", href: "/dashboard/tools", icon: Calculator }, // CORREGIDO
+    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen },
     { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ],
   mecanico: [
     { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
     { name: "Mis Tareas", href: "/dashboard/services", icon: ClipboardList },
     { name: "Nuevo Checklist", href: "/dashboard/checklists", icon: ClipboardCheck },
-    { name: "Calculadoras", href: "/dashboard/calculators/seeds", icon: Calculator },
-    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
+    { name: "Herramientas", href: "/dashboard/tools", icon: Calculator }, // CORREGIDO
+    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen },
     { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ]
 };
@@ -56,9 +70,9 @@ export default function MobileNav({ userRole = 'mecanico' }: MobileNavProps) {
 
       {/* Menú Desplegable */}
       {isOpen && (
-        <div className="absolute top-16 left-0 w-full bg-white border-b border-gray-200 shadow-xl animate-in slide-in-from-top-2">
+        <div className="absolute top-16 left-0 w-full bg-white border-b border-gray-200 shadow-xl animate-in slide-in-from-top-2 h-[calc(100vh-4rem)] overflow-y-auto">
           <div className="p-4 bg-gray-50 text-xs font-semibold text-gray-400 uppercase">
-             Menú {userRole === 'coordinador' ? 'Coordinación' : 'Técnico'}
+              Menú {userRole === 'coordinador' ? 'Coordinación' : 'Técnico'}
           </div>
           <nav className="flex flex-col p-4 pt-2 gap-2">
             {navItems.map((item) => {
@@ -81,7 +95,7 @@ export default function MobileNav({ userRole = 'mecanico' }: MobileNavProps) {
               );
             })}
             
-            <div className="border-t border-gray-100 my-2 pt-2">
+            <div className="border-t border-gray-100 my-2 pt-2 pb-8"> {/* Padding bottom extra para móviles */}
                 <form action={signOut}>
                     <button className="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
                         <LogOut className="w-5 h-5" />

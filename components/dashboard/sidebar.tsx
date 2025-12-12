@@ -5,14 +5,14 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { 
   LayoutDashboard, 
-  Calculator, 
+  Calculator, // Usamos Calculator para representar Herramientas
   ClipboardCheck, 
   ClipboardList, 
   LogOut, 
   Wrench,
   Users,
   Briefcase,
-  BookOpen, // Nuevo ícono para biblioteca
+  BookOpen, 
   Calendar
 } from "lucide-react";
 import { signOut } from "@/app/(auth)/actions";
@@ -24,15 +24,16 @@ const MENU_ITEMS = {
     { name: "Gestión de Usuarios", href: "/dashboard/users", icon: Users },
     { name: "Asignaciones", href: "/dashboard/assignments", icon: Briefcase },
     { name: "Reportes Globales", href: "/dashboard/services", icon: ClipboardList },
-    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
+    { name: "Herramientas", href: "/dashboard/tools", icon: Calculator }, // CORREGIDO: Apunta al menú de herramientas
+    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen },
     { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ],
   mecanico: [
     { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
     { name: "Mis Tareas", href: "/dashboard/services", icon: ClipboardList },
     { name: "Nuevo Checklist", href: "/dashboard/checklists", icon: ClipboardCheck },
-    { name: "Calculadoras", href: "/dashboard/calculators/seeds", icon: Calculator },
-    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen }, // Nuevo
+    { name: "Herramientas", href: "/dashboard/tools", icon: Calculator }, // CORREGIDO: Apunta al menú de herramientas
+    { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen },
     { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ]
 };
