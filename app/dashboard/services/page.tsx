@@ -1,137 +1,162 @@
 import { createClient } from "@/utils/supabase/server";
-import { Wrench, FileText, CheckCircle, Clock, ClipboardList } from "lucide-react";
+import { getTechnicians, getServiceTypes } from "@/app/dashboard/actions/service-queries"; // Ajusta la ruta si es necesario
+import CreateAssignmentForm from "../assignments/create-assignment-form"; // Ajusta rutas de importación si moviste el archivo
+import AssignmentCard from "@/app/dashboard/components/assignment-card"; // Ajusta rutas
+import { ClipboardList, History, LayoutList, Calendar as CalendarIcon, ArrowRight } from "lucide-react";
 import Link from "next/link";
-// Importamos las funciones de consulta y el componente de tarjeta
-import { getServiceReports, getProfileInfo, getAssignmentsList, ServiceReportRow, AssignmentRow } from "@/app/dashboard/actions/service-queries"; 
-import AssignmentCard from "../components/assignment-card";
 
-// Función para formatear la fecha a un formato legible
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-AR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    }).replace('.', ''); 
-};
+// ⚠️ IMPORTANTE: Esto obliga a la página a recargarse siempre desde el servidor
+export const dynamic = 'force-dynamic';
 
 export default async function ServicesPage() {
-    // 1. Obtener datos del usuario
-    const { user, profile } = await getProfileInfo();
+    // CORRECCIÓN: Agregamos 'await' aquí para resolver la Promesa del cliente
+    const supabase = await createClient();
     
-    // Si no hay usuario, mostrar mensaje simple (el middleware o layout ya protegen)
-    if (!user) return null;
+    console.log("\n================ INICIO DEBUG PANEL ASIGNACIONES ================");
 
-    // 2. Consultar Reportes Finalizados y Asignaciones Pendientes
-    const [{ reports, error: reportsError }, { assignments, error: assignmentsError }] = await Promise.all([
-        getServiceReports(),
-        getAssignmentsList(user.id) // Pasamos el ID para filtrar solo las tareas de este técnico
+    // 1. Cargas paralelas de datos
+    // Ahora 'supabase' ya es el cliente resuelto, así que podemos usar .from()
+    const [{ data: technicians }, { data: serviceTypes }, responseAssignments] = await Promise.all([
+        getTechnicians(),
+        getServiceTypes(),
+        supabase
+            .from('assignments')
+            .select(`
+                *,
+                profiles ( full_name ),
+                service_types ( name )
+            `)
+            .order('created_at', { ascending: false })
+            .limit(50)
     ]);
 
-    // Manejo de errores
-    if (reportsError || assignmentsError) {
-        return (
-            <div className="p-6 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg">
-                <h1 className="text-xl font-bold mb-2">Error al cargar datos</h1>
-                <p>Hubo un problema al conectar con la base de datos. Intente recargar.</p>
-            </div>
-        );
+    const { data: assignments, error } = responseAssignments;
+
+    // --- LOGS DE DEBUG ---
+    if (error) {
+        console.error("❌ ERROR CRÍTICO SUPABASE:", error.message);
+    } else {
+        console.log("✅ Conexión DB Exitosa.");
+        console.log(`📊 Tareas totales traídas (Raw): ${assignments?.length || 0}`);
+        
+        if (assignments && assignments.length > 0) {
+            console.log("🔍 Muestreo de las primeras 3 tareas (Las más nuevas):");
+            assignments.slice(0, 3).forEach((a, index) => {
+                console.log(`   [${index}] Cliente: ${a.client_name} | Status: "${a.status}" | ID: ${a.id}`);
+            });
+        }
     }
 
-    const completedReports = reports || [];
+    const allAssignments = assignments || [];
     
-    // Filtramos las tareas activas (Abiertas o En Progreso)
-    const activeAssignments = assignments ? assignments.filter(a => 
-        a.status === 'abierto' || a.status === 'en_progreso'
-    ) : [];
+    // Filtro Permisivo
+    const activeAssignments = allAssignments.filter(a => a.status !== 'finalizado' && a.status !== 'cancelado');
+    const historyAssignments = allAssignments.filter(a => a.status === 'finalizado' || a.status === 'cancelado');
+
+    console.log(`📉 Filtros aplicados:`);
+    console.log(`   - Activas (No finalizado/cancelado): ${activeAssignments.length}`);
+    console.log(`   - Historial: ${historyAssignments.length}`);
+    console.log("================ FIN DEBUG =================\n");
 
     return (
-        <div className="max-w-5xl mx-auto space-y-10 pb-10">
+        <div className="max-w-7xl mx-auto space-y-8">
             
-            {/* Cabecera */}
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestión de Servicios</h1>
-                <p className="text-gray-500">
-                    Bienvenido, <span className="font-semibold text-gray-800">{profile?.full_name}</span>. 
-                    Aquí tienes tus tareas pendientes y tu historial.
-                </p>
-            </div>
-
-            {/* SECCIÓN 1: TAREAS PENDIENTES (NUEVA SECCIÓN) */}
-            <section>
-                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
-                    <ClipboardList className="w-6 h-6 text-brand-red" />
-                    Tareas Asignadas ({activeAssignments.length})
-                </h2>
-                
-                {activeAssignments.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4">
-                        {activeAssignments.map((assignment) => (
-                            // showTechnician=false porque el mecánico sabe que son suyas
-                            <AssignmentCard key={assignment.id} assignment={assignment} showTechnician={false} />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="bg-blue-50 p-8 rounded-xl border border-blue-100 text-center">
-                        <Clock className="w-10 h-10 text-blue-300 mx-auto mb-3" />
-                        <h3 className="text-lg font-semibold text-blue-800">Todo al día</h3>
-                        <p className="text-blue-600">No tienes órdenes de servicio pendientes en este momento.</p>
-                    </div>
-                )}
-            </section>
-
-            {/* SECCIÓN 2: HISTORIAL DE REPORTES */}
-            <section>
-                <div className="flex justify-between items-end mb-4 border-b border-gray-200 pb-2">
-                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                        <FileText className="w-6 h-6 text-gray-400" />
-                        Historial de Reportes ({completedReports.length})
-                    </h2>
-                    <Link href="/dashboard/checklists" className="text-sm font-semibold text-brand-red hover:underline">
-                        + Nuevo Reporte
-                    </Link>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <ClipboardList className="w-7 h-7 text-brand-red" />
+                        Panel de Asignaciones
+                    </h1>
+                    <p className="text-gray-500 text-sm">Gestiona y asigna nuevas tareas de servicio.</p>
                 </div>
                 
-                {completedReports.length === 0 ? (
-                    <div className="text-center p-12 bg-white rounded-xl border border-gray-200 border-dashed text-gray-400">
-                        Aún no has finalizado ningún reporte de servicio.
+                <div className="flex gap-3">
+                    <Link 
+                        href="/dashboard/calendar" 
+                        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-brand-red transition-colors flex items-center gap-2 text-sm font-medium shadow-sm"
+                    >
+                        <CalendarIcon className="w-4 h-4" />
+                        Ver Agenda
+                    </Link>
+                    <Link 
+                        href="/dashboard/assignments/list" 
+                        className="px-4 py-2 bg-brand-red text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 text-sm font-medium shadow-md shadow-red-200"
+                    >
+                        <LayoutList className="w-4 h-4" />
+                        Gestión Completa
+                    </Link>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                {/* COLUMNA IZQUIERDA */}
+                <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 sticky top-4">
+                        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-brand-red"></div>
+                            Crear Nueva Tarea
+                        </h2>
+                        
+                        {/* Ajusta props si tu componente CreateAssignmentForm lo requiere */}
+                        <CreateAssignmentForm 
+                            technicians={technicians || []} 
+                            serviceTypes={serviceTypes || []} 
+                        />
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 gap-4">
-                        {completedReports.map((report: ServiceReportRow) => (
-                            <div key={report.id} className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all group">
-                                <div className="flex justify-between items-start mb-2">
-                                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 flex items-center gap-1">
-                                        <CheckCircle className="w-3 h-3" /> Finalizado
-                                    </span>
-                                    <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
-                                        {formatDate(report.created_at)}
-                                    </span>
-                                </div>
-                                
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <h3 className="text-lg font-bold text-gray-900 capitalize mb-1">
-                                            {report.type.replace(/_/g, ' ')}
-                                        </h3>
-                                        <p className="text-sm text-gray-600">
-                                            <span className="font-medium text-gray-800">{report.client_name}</span> • {report.machine_model}
-                                        </p>
-                                    </div>
-                                    
-                                    <Link 
-                                        href={`/dashboard/services/${report.id}`} 
-                                        className="btn-primary bg-white text-brand-red border border-brand-red hover:bg-red-50 px-4 py-2 text-sm"
-                                    >
-                                        Ver
-                                    </Link>
-                                </div>
+                </div>
+
+                {/* COLUMNA DERECHA */}
+                <div className="lg:col-span-2 space-y-8">
+                    
+                    {/* Tareas Activas */}
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                Tareas Activas <span className="text-sm font-normal text-gray-400">({activeAssignments.length})</span>
+                            </h2>
+                        </div>
+
+                        {activeAssignments.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {activeAssignments.map((assignment) => (
+                                    <AssignmentCard key={assignment.id} assignment={assignment} />
+                                ))}
                             </div>
-                        ))}
+                        ) : (
+                            <div className="bg-gray-50 border border-dashed border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-gray-400">
+                                <ClipboardList className="w-10 h-10 mb-2 opacity-20" />
+                                <p className="text-sm">No hay tareas activas.</p>
+                                <p className="text-xs mt-2">Revisa la terminal para ver los logs de debug.</p>
+                            </div>
+                        )}
                     </div>
-                )}
-            </section>
+
+                    {/* Historial */}
+                    <div>
+                        <div className="flex items-center justify-between mb-4 border-t border-gray-100 pt-6">
+                            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <History className="w-5 h-5 text-gray-400" />
+                                Historial Reciente
+                            </h2>
+                            <Link href="/dashboard/assignments/list" className="text-xs font-medium text-brand-red hover:underline flex items-center gap-1">
+                                Ver todos <ArrowRight className="w-3 h-3" />
+                            </Link>
+                        </div>
+
+                        {historyAssignments.length > 0 ? (
+                            <div className="space-y-3">
+                                {historyAssignments.map((assignment) => (
+                                    <AssignmentCard key={assignment.id} assignment={assignment} />
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-400 italic">No hay historial reciente.</p>
+                        )}
+                    </div>
+
+                </div>
+            </div>
         </div>
     );
 }

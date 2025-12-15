@@ -16,7 +16,8 @@ const sortByNumber = (a: any, b: any, field: string) => {
 
 // 1. Obtener Cultivos (Orden alfabético normal)
 export async function getCrops() {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregado 'await'
+    const supabase = await createClient();
     // @ts-ignore
     const { data } = await supabase.from('seed_crops').select('*').order('name');
     return data || [];
@@ -24,7 +25,8 @@ export async function getCrops() {
 
 // 2. Obtener Placas (Orden alfabético normal)
 export async function getPlates(cropId: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregado 'await'
+    const supabase = await createClient();
     // @ts-ignore
     const { data } = await supabase
         .from('seed_plates')
@@ -36,7 +38,8 @@ export async function getPlates(cropId: string) {
 
 // 3. Obtener Distancias (ORDEN NUMÉRICO: 35, 42, 52.5...)
 export async function getSpacings(plateId: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregado 'await'
+    const supabase = await createClient();
     // @ts-ignore
     const { data } = await supabase
         .from('row_spacings')
@@ -49,7 +52,8 @@ export async function getSpacings(plateId: string) {
 
 // 4. Obtener Poblaciones (ORDEN NUMÉRICO: 50000, 60000, 100000...)
 export async function getPopulations(spacingId: string, plateId: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregado 'await'
+    const supabase = await createClient();
     // @ts-ignore
     const { data } = await supabase
         .from('seed_populations')
@@ -63,7 +67,8 @@ export async function getPopulations(spacingId: string, plateId: string) {
 
 // 5. Obtener Velocidades Disponibles (ORDEN NUMÉRICO: 5 km/h, 5.5 km/h...)
 export async function getAvailableSpeeds(populationId: string, spacingId: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregado 'await'
+    const supabase = await createClient();
     // @ts-ignore
     const { data } = await supabase
         .from('speed_limits')
@@ -77,7 +82,8 @@ export async function getAvailableSpeeds(populationId: string, spacingId: string
 
 // 6. VERIFICAR RESULTADO FINAL
 export async function checkSpeedLimit(populationId: string, spacingId: string, speedValue: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregado 'await'
+    const supabase = await createClient();
     
     // @ts-ignore
     const { data, error } = await supabase

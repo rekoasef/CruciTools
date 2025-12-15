@@ -1,11 +1,13 @@
 import { createClient } from "@/utils/supabase/server";
-import { getTechnicians, getServiceTypes } from "@/app/dashboard/actions/service-queries";
+// Asegúrate de que esta ruta sea correcta según dónde guardaste el archivo de queries
+import { getTechnicians, getServiceTypes } from "@/app/dashboard/actions/service-queries"; // O "@/utils/supabase/queries"
 import AssignmentsTable from "./assignments-table";
 import Link from "next/link";
 import { ArrowLeft, LayoutList } from "lucide-react";
 
 export default async function AssignmentsListPage() {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await' aquí
+    const supabase = await createClient();
     
     // 1. Obtener todas las asignaciones con sus relaciones
     // Ordenadas por fecha de creación descendente

@@ -10,7 +10,8 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 
 export default async function AssignmentsPage() {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await' aquí
+    const supabase = await createClient();
     
     console.log("\n================ INICIO DEBUG PANEL ASIGNACIONES ================");
 

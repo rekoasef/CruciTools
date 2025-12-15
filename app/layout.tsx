@@ -1,28 +1,37 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CruciTools | Gestión Postventa",
-  description: "Herramientas digitales para mecánicos y coordinadores de Crucianelli.",
-  manifest: "/manifest.json", // <--- ESTA LÍNEA ES CLAVE
-  themeColor: "#E40613",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  title: "CruciTools",
+  description: "Plataforma de Asistencia Técnica",
+  manifest: "/manifest.json", // <--- AGREGAR ESTO
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "CruciTools",
+  },
+};
+
+// <--- AGREGAR ESTO TAMBIÉN
+export const viewport: Viewport = {
+  themeColor: "#e11d2b",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // Se siente más nativa si no se puede hacer zoom
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="es">
-      <body className={cn(inter.variable, "bg-brand-gray min-h-screen font-sans")}>
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

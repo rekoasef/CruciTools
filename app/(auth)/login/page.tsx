@@ -1,14 +1,28 @@
-// RUTA: /app/(auth)/login/page.tsx
 import { redirect } from "next/navigation";
 import { signIn } from "../actions";
 import { createClient } from "@/utils/supabase/server";
-import { Wrench } from "lucide-react"; // Agregamos un ícono para el logo
+import { Wrench } from "lucide-react"; 
 
-export default async function LoginPage({
-    searchParams,
-}: {
-    searchParams: { error: string };
-}) {
+// CORRECCIÓN NEXT.JS 15+: searchParams ahora es una Promesa
+interface LoginPageProps {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+    
+    // 1. Esperamos a que se resuelvan los parámetros de la URL
+    const params = await searchParams;
+    const errorMessage = typeof params.error === 'string' ? params.error : null;
+
+    // 2. Guardrail: Redirigir si ya está logueado
+    // CORRECCIÓN: Agregamos 'await' aquí
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+
+    if (data?.user) {
+        redirect("/dashboard");
+    }
+
     // Definición de la Server Action
     const signInAction = async (formData: FormData) => {
         "use server";
@@ -17,16 +31,6 @@ export default async function LoginPage({
             redirect(`/login?error=${result.error}`);
         }
     };
-
-    // Guardrail: Redirigir si ya está logueado
-    const supabase = createClient();
-    const { data } = await supabase.auth.getUser();
-
-    if (data?.user) {
-        redirect("/dashboard");
-    }
-    
-    const errorMessage = searchParams.error || null;
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">

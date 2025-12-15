@@ -14,7 +14,10 @@ interface ActionResponse {
 export async function createNewUser(data: CreateUserData): Promise<ActionResponse> {
     // 1. Validar permisos del usuario actual (Guardrail de seguridad)
     // Aunque la página está protegida, aseguramos la acción.
-    const supabase = createClient();
+    
+    // CORRECCIÓN: Agregamos 'await' al cliente normal (que lee cookies)
+    const supabase = await createClient();
+    
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     
     if (!currentUser) {
@@ -45,6 +48,8 @@ export async function createNewUser(data: CreateUserData): Promise<ActionRespons
     const { email, password, fullName, role } = validation.data;
 
     // 3. Crear usuario usando el ADMIN Client
+    // NOTA: El admin client suele ser síncrono (no lee cookies). 
+    // Si te da error aquí, agrégale await también, pero normalmente no hace falta.
     const supabaseAdmin = createAdminClient();
 
     const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({

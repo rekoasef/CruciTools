@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Database } from "@/lib/database.types"; 
 
 // =========================================================
-// TIPOS EXPORTADOS (Corrección Aquí)
+// TIPOS EXPORTADOS
 // =========================================================
 
 // Tipos base de tablas
@@ -29,7 +29,8 @@ export type UnlinkedReportRow = Pick<ServiceReportRow, 'id' | 'client_name' | 'm
  * Obtiene información del perfil actual y el usuario auth
  */
 export async function getProfileInfo() {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return { user: null, profile: null };
@@ -52,7 +53,8 @@ export async function getProfileInfo() {
  * Obtiene todos los perfiles (Para gestión de usuarios - Coordinador)
  */
 export async function getAllProfiles() {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('profiles')
@@ -68,7 +70,8 @@ export async function getAllProfiles() {
  * Obtiene lista de técnicos (Alias para dropdowns de asignación)
  */
 export async function getTechnicians() {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
     
     const { data, error } = await supabase
         .from('profiles')
@@ -93,7 +96,8 @@ export async function getTechnicians() {
  * Historial de reportes (General)
  */
 export async function getServiceReports() {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('service_reports')
@@ -109,7 +113,8 @@ export async function getServiceReports() {
  * Detalles de un reporte específico
  */
 export async function getReportDetails(reportId: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
 
     const { data: report, error } = await supabase
         .from('service_reports')
@@ -126,7 +131,8 @@ export async function getReportDetails(reportId: string) {
  * Reportes finalizados sin asignar (Para enlazar a tareas)
  */
 export async function getUnlinkedReports(technicianId: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('service_reports')
@@ -144,7 +150,8 @@ export async function getUnlinkedReports(technicianId: string) {
  * KPI: Servicios del mes
  */
 export async function getTechnicianKPIs() {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return { monthlyCount: 0, error: "No autenticado" };
@@ -177,7 +184,8 @@ export async function getTechnicianKPIs() {
  * Obtiene tipos de servicio activos (Para dropdowns)
  */
 export async function getServiceTypes() {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('service_types')
@@ -194,7 +202,8 @@ export async function getServiceTypes() {
  * Lista de asignaciones (Legacy o uso general)
  */
 export async function getAssignmentsList(technicianId?: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
 
     let query = supabase
         .from('assignments')
@@ -213,5 +222,5 @@ export async function getAssignmentsList(technicianId?: string) {
 
     if (error) return { assignments: [], error: error.message };
 
-    return { assignments: data as AssignmentRow[], error: null };
+    return { assignments: data as unknown as AssignmentRow[], error: null };
 }

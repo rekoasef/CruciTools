@@ -12,7 +12,8 @@ type LibraryType = Database['public']['Enums']['library_type'];
  * Obtiene los ítems de una carpeta específica
  */
 export async function getLibraryItems(folderId: string | null) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
     
     let query = supabase
         .from('library_items')
@@ -40,7 +41,8 @@ export async function getLibraryItems(folderId: string | null) {
  * Obtiene info de carpeta para breadcrumbs
  */
 export async function getFolderDetails(folderId: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
     const { data } = await supabase.from('library_items').select('id, name, parent_id').eq('id', folderId).single();
     return data;
 }
@@ -49,7 +51,8 @@ export async function getFolderDetails(folderId: string) {
  * CREAR: Nueva carpeta o archivo
  */
 export async function createLibraryItem(formData: FormData) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return { error: "No autenticado" };
@@ -84,7 +87,8 @@ export async function createLibraryItem(formData: FormData) {
  * ELIMINAR: Borra un ítem (si es carpeta, borra todo su contenido por cascada)
  */
 export async function deleteLibraryItem(itemId: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
     
     // Verificar permisos (solo coordinador puede borrar, validado por RLS también)
     const { error } = await supabase
@@ -104,7 +108,8 @@ export async function deleteLibraryItem(itemId: string) {
  * ACTUALIZAR: Renombra un ítem
  */
 export async function renameLibraryItem(itemId: string, newName: string) {
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await'
+    const supabase = await createClient();
 
     if (!newName || newName.trim().length === 0) {
         return { error: "El nombre no puede estar vacío" };

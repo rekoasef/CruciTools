@@ -33,7 +33,8 @@ export async function submitStartupChecklist(data: StartupChecklistData): Promis
     const validatedData = validation.data;
     
     // 2. OBTENER ID DEL USUARIO
-    const supabase = createClient();
+    // CORRECCIÓN: Agregamos 'await' aquí
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -52,8 +53,6 @@ export async function submitStartupChecklist(data: StartupChecklistData): Promis
     };
 
     // 4. INSERCIÓN EN SUPABASE
-    // CORRECCIÓN: Quitamos 'as never' porque ya actualizamos database.types.ts
-    // Ahora TypeScript reconoce la tabla 'service_reports' y sus tipos.
     const { error } = await supabase
         .from('service_reports') 
         .insert(reportToInsert); 
