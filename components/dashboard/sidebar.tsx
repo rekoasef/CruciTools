@@ -20,21 +20,21 @@ import { signOut } from "@/app/(auth)/actions";
 // Definimos los menús por rol
 const MENU_ITEMS = {
   coordinador: [
-    { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
+    // { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
     { name: "Gestión de Usuarios", href: "/dashboard/users", icon: Users },
-    { name: "Asignaciones", href: "/dashboard/assignments", icon: Briefcase },
-    { name: "Reportes Globales", href: "/dashboard/services", icon: ClipboardList },
+    // { name: "Asignaciones", href: "/dashboard/assignments", icon: Briefcase },
+    // { name: "Reportes Globales", href: "/dashboard/services", icon: ClipboardList },
     { name: "Herramientas", href: "/dashboard/tools", icon: Calculator }, // CORREGIDO: Apunta al menú de herramientas
     { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen },
-    { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
+    // { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ],
   mecanico: [
-    { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Mis Tareas", href: "/dashboard/services", icon: ClipboardList },
-    { name: "Nuevo Checklist", href: "/dashboard/checklists", icon: ClipboardCheck },
+    // { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
+    // { name: "Mis Tareas", href: "/dashboard/services", icon: ClipboardList },
+    // { name: "Nuevo Checklist", href: "/dashboard/checklists", icon: ClipboardCheck },
     { name: "Herramientas", href: "/dashboard/tools", icon: Calculator }, // CORREGIDO: Apunta al menú de herramientas
     { name: "Biblioteca Técnica", href: "/dashboard/library", icon: BookOpen },
-    { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
+    // { name: "Agenda", href: "/dashboard/calendar", icon: Calendar },
   ]
 };
 
